@@ -1,10 +1,9 @@
 const express = require('express');
 const app = express();
+const axios = require('axios');
 app.use(express.json());
-const { models: { User }} = require('./db');
+const { models: { User, Note }} = require('./db');
 const path = require('path');
-const jwt = require('jsonwebtoken');
-const secret = process.env.JWT
 
 app.get('/', (req, res)=> res.sendFile(path.join(__dirname, 'index.html')));
 
@@ -32,5 +31,16 @@ app.use((err, req, res, next)=> {
   console.log(err);
   res.status(err.status || 500).send({ error: err.message });
 });
+
+// getting user's notes
+app.get('/api/users/:userId/notes', async(req, res, next)=> {
+  try {
+    const notes = await Note.findAll({where: {userId: req.params.userId}});
+    res.send(notes);
+  }
+  catch(ex){
+    next(ex);
+  }
+})
 
 module.exports = app;
