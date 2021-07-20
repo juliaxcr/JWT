@@ -3,6 +3,8 @@ const app = express();
 app.use(express.json());
 const { models: { User }} = require('./db');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+const secret = process.env.JWT
 
 app.get('/', (req, res)=> res.sendFile(path.join(__dirname, 'index.html')));
 
@@ -10,6 +12,8 @@ app.post('/api/auth', async(req, res, next)=> {
   try {
     res.send({ token: await User.authenticate(req.body)});
   }
+  // { token: await jwt.sign({userId: user.id}, secret)}
+
   catch(ex){
     next(ex);
   }
